@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1792445459989,
+      "tag": "0000_fix_rls_recursion_requests_offers",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793579789704,
+      "tag": "0001_cancel_accept_worker_pricing",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793580371876,
+      "tag": "0002_fix_cancel_guard",
+      "breakpoints": true
+    }
+  ]
+}

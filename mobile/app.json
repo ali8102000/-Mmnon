@@ -1,0 +1,110 @@
+{
+  "expo": {
+    "name": "ممنون",
+    "slug": "mumnun",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "mumnun",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "platforms": ["android"],
+    "android": {
+      "package": "com.mumnun.app",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundImage": "./assets/adaptive-icon-bg.png"
+      },
+      "splash": {
+        "image": "./assets/splash.png",
+        "backgroundColor": "#1e40af"
+      },
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_LOCATION",
+        "POST_NOTIFICATIONS",
+        "VIBRATE",
+        "INTERNET",
+        "ACCESS_NETWORK_STATE",
+        "WAKE_LOCK",
+        "RECEIVE_BOOT_COMPLETED"
+      ],
+      "googleServicesFile": "./google-services.json",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "mumnun",
+              "host": "request"
+            },
+            {
+              "scheme": "https",
+              "host": "mumnun.app"
+            }
+          ]
+        }
+      ]
+    },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 24,
+            "targetSdkVersion": 35,
+            "compileSdkVersion": 35,
+            "kotlinVersion": "2.0.21",
+            "enableProguardInReleaseBuilds": true,
+            "enableR8": true,
+            "useLegacyPackaging": false
+          }
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "يستخدم التطبيق الموقع لتتبع الرحلات في الخلفية",
+          "locationWhenInUsePermission": "يستخدم التطبيق الموقع لعرض موقعك على الخريطة"
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#1e40af",
+          "defaultChannel": "default",
+          "enableBackgroundRemoteNotifications": true
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash.png",
+          "backgroundColor": "#1e40af",
+          "imageWidth": 200
+        }
+      ],
+      "expo-font"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": ""
+      },
+      "supabaseUrl": "https://hvfiwjryffjwaynkpgar.supabase.co",
+      "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2Zml3anJ5ZmZqd2F5bmtwZ2FyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NDExMzMsImV4cCI6MjEwMDIxNzEzM30.dq0PGhVGypweYvDnTuOjWC-GuPOPEyFk5ElVO_ao-EQ",
+      "googleMapsApiKey": "AIzaSyB0PgoQXL_C7cSwXUiRF_VXFEA0uSiXnJE"
+    },
+    "owner": "mumnun",
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": ""
+    }
+  }
+}
