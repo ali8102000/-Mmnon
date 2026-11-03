@@ -5,21 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useAuth } from "@/lib/auth-context";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import {
-  Loader2,
-  ArrowLeft,
-  ArrowRight,
-  MapPin,
-  CheckCircle2,
-  User,
-  Users,
-  Sun,
-  Snowflake,
-  CloudSun,
-  Compass,
-  ChevronUp,
-  ChevronDown,
-} from "lucide-react";
+import { Loader as Loader2, ArrowLeft, ArrowRight, MapPin, CircleCheck as CheckCircle2, User, Users, Compass, ChevronUp, ChevronDown } from "lucide-react";
 import { MapPicker } from "@/components/map-picker";
 import { dispatchRequest } from "@/lib/dispatch.functions";
 import { useNearbyProviders } from "@/lib/use-nearby-providers";
@@ -35,6 +21,7 @@ import {
   type WeatherCondition,
   type RoadCondition,
 } from "@/lib/taxi-fares";
+import { detectWeatherCondition, seasonalWeatherFallback } from "@/lib/weather";
 
 const search = z.object({ type: z.enum(["taxi", "service"]).default("taxi") });
 
@@ -115,7 +102,7 @@ function NewRequest() {
 
   // Taxi State
   const [vehicleCategory, setVehicleCategory] = useState<VehicleCategory>("economy");
-  const [weatherCondition, setWeatherCondition] = useState<WeatherCondition>("heat");
+  const [weatherCondition, setWeatherCondition] = useState<WeatherCondition>(() => seasonalWeatherFallback());
   const [roadCondition, setRoadCondition] = useState<RoadCondition>("normal");
   const [drawerExpanded, setDrawerExpanded] = useState(true);
   const [showFareDetails, setShowFareDetails] = useState(false);
@@ -154,6 +141,15 @@ function NewRequest() {
       clearTimeout(t);
     };
   }, [pickupCoords?.lat, pickupCoords?.lng, destCoords?.lat, destCoords?.lng]);
+
+  useEffect(() => {
+    if (!pickupCoords) return;
+    const controller = new AbortController();
+    detectWeatherCondition(pickupCoords.lat, pickupCoords.lng, controller.signal)
+      .then(setWeatherCondition)
+      .catch(() => {});
+    return () => controller.abort();
+  }, [pickupCoords?.lat, pickupCoords?.lng]);
 
   const nearby = useNearbyProviders({
     center: pickupCoords,
@@ -550,79 +546,6 @@ function NewRequest() {
               {/* Expanded details: Climate & Road Traffic Adjustments */}
               {drawerExpanded && (
                 <>
-                  {/* Weather Factor: Heat (AC) vs Rain vs Cold vs Mild */}
-                  <div className="space-y-1.5">
-                    <div className="text-xs font-bold text-muted-foreground flex items-center justify-between">
-                      <span>🌡️ مراعاة أجواء الطقس (حر وتكييف / أمطار / معتدل)</span>
-                      <span className="text-[10px] text-primary">تسعير واقعي</span>
-                    </div>
-                    <div className="grid grid-cols-4 gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => setWeatherCondition("heat")}
-                        className={`p-2 rounded-2xl text-center transition-all btn-press border ${
-                          weatherCondition === "heat"
-                            ? "bg-amber-500 text-white border-amber-600 shadow-md scale-[1.02]"
-                            : "bg-slate-50 border-border/60 hover:bg-slate-100"
-                        }`}
-                      >
-                        <div className="text-lg">☀️</div>
-                        <div className="text-[10px] font-black leading-tight mt-0.5">حر (AC)</div>
-                        <div className={`text-[8px] mt-0.5 ${weatherCondition === "heat" ? "text-amber-100" : "text-muted-foreground"}`}>
-                          +{WEATHER_RATES.heat.extra} د.ع
-                        </div>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => setWeatherCondition("rain")}
-                        className={`p-2 rounded-2xl text-center transition-all btn-press border ${
-                          weatherCondition === "rain"
-                            ? "bg-blue-600 text-white border-blue-700 shadow-md scale-[1.02]"
-                            : "bg-slate-50 border-border/60 hover:bg-slate-100"
-                        }`}
-                      >
-                        <div className="text-lg">🌧️</div>
-                        <div className="text-[10px] font-black leading-tight mt-0.5">ممطر</div>
-                        <div className={`text-[8px] mt-0.5 ${weatherCondition === "rain" ? "text-blue-100" : "text-muted-foreground"}`}>
-                          +{WEATHER_RATES.rain.extra} د.ع
-                        </div>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => setWeatherCondition("cold")}
-                        className={`p-2 rounded-2xl text-center transition-all btn-press border ${
-                          weatherCondition === "cold"
-                            ? "bg-sky-600 text-white border-sky-700 shadow-md scale-[1.02]"
-                            : "bg-slate-50 border-border/60 hover:bg-slate-100"
-                        }`}
-                      >
-                        <div className="text-lg">❄️</div>
-                        <div className="text-[10px] font-black leading-tight mt-0.5">بارد</div>
-                        <div className={`text-[8px] mt-0.5 ${weatherCondition === "cold" ? "text-sky-100" : "text-muted-foreground"}`}>
-                          +{WEATHER_RATES.cold.extra} د.ع
-                        </div>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => setWeatherCondition("mild")}
-                        className={`p-2 rounded-2xl text-center transition-all btn-press border ${
-                          weatherCondition === "mild"
-                            ? "bg-emerald-600 text-white border-emerald-700 shadow-md scale-[1.02]"
-                            : "bg-slate-50 border-border/60 hover:bg-slate-100"
-                        }`}
-                      >
-                        <div className="text-lg">🌤️</div>
-                        <div className="text-[10px] font-black leading-tight mt-0.5">معتدل</div>
-                        <div className={`text-[8px] mt-0.5 ${weatherCondition === "mild" ? "text-emerald-100" : "text-muted-foreground"}`}>
-                          0 د.ع
-                        </div>
-                      </button>
-                    </div>
-                  </div>
-
                   {/* Road Traffic Factor (Normal vs Rush Hour Traffic) */}
                   <div className="space-y-1.5">
                     <div className="text-xs font-bold text-muted-foreground flex items-center justify-between">

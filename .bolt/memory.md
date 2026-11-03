@@ -2,8 +2,9 @@
 
 ## Product intent & audience
 
-- Web app includes an interactive map and place search.
-- Existing project is being migrated from or aligned with an older project’s Google Maps configuration.
+- Web app includes an interactive map, place search, and taxi-request flow.
+- Taxi fare calculation includes weather-related pricing adjustments.
+- Weather conditions should be determined automatically from the pickup location rather than selected by the rider.
 
 ## Brand personality & voice
 
@@ -11,25 +12,29 @@
 
 ## Visual design & UX direction
 
-- Map experience should prefer Google Maps when a usable client key is available.
-- Leaflet remains the fallback map implementation.
-- Place search should remain functional through free-map search fallback when server-side Google Search configuration is unavailable.
-- Map provider failures should degrade gracefully rather than block the app.
+- Map experience should prefer Google Maps when a usable client key is available, with Leaflet as fallback.
+- Place search should remain functional through free-map search when server-side Google Search configuration is unavailable.
+- Map and search provider failures should degrade gracefully.
+- The taxi request screen no longer presents manual hot/cold/rain weather controls.
+- Automatic weather detection runs from the pickup location and updates when that location changes.
+- Weather lookup uses Open-Meteo; seasonal defaults provide a fallback when the lookup fails.
+- Weather state and its fare effect should be visible or otherwise understandable without requiring user configuration.
 
 ## Decisions, constraints & rationale
 
-- The current repository does not have a Google Maps key in `.env`; the hosted build therefore previously fell back to Leaflet.
-- The old Google Maps key was taken from `mobile/app.json`, because that project references a different Supabase backend and was treated as the legacy project.
-- The legacy key was added as a build-time fallback alongside existing Supabase-related configuration so the hosted client can load Google Maps without requiring `.env`.
-- `expo-app` contains another Google key and uses the current Supabase project; its key was not selected because the migration target was inferred to be the legacy `mobile/` configuration.
-- The client build succeeded. The server build was terminated before completion, so the full build is not verified.
-- The app could not be opened for runtime confirmation that the map loads.
-- Client map display and server-side place search require separate Google configuration. Server search still needs a server-side Google key and a platform/API key; until then, free-map search remains the fallback.
-- The Google key is now present in source/build configuration and should be restricted in Google Cloud to the app’s authorized domain/platforms.
+- The current repository does not have a Google Maps key in `.env`; the hosted build previously fell back to Leaflet.
+- The legacy Google key was taken from `mobile/app.json`, while `expo-app` references the current Supabase project and was not selected as the migration source.
+- The legacy key was added as a build-time fallback so the hosted client can load Google Maps without requiring `.env`.
+- Client map display and server-side place search use separate Google configuration. Server search still needs a server-side Google key and platform/API key; free-map search remains the fallback until configured.
+- The Google key should be restricted in Google Cloud to authorized domains/platforms, APIs, quotas, referrers, and billing requirements.
+- Weather pricing is retained, but weather selection is no longer user-controlled.
+- Automatic weather classification is based on live conditions at the pickup point; seasonal weather is used as the offline/error fallback.
+- The project build succeeded after the weather changes. Runtime verification of a complete taxi request and resulting fare was not performed.
 
 ## Open questions & assumptions
 
-- Confirm whether the intended migrated key is from `mobile/app.json` or `expo-app`; swap the fallback if the latter is authoritative.
+- Confirm whether the intended Google Maps key is from `mobile/app.json` or `expo-app`; replace the fallback if `expo-app` is authoritative.
 - Determine where server-side Google Search credentials and the required platform key should be configured.
-- Complete a full client/server build and verify the map provider at runtime.
-- Confirm the Google key’s API restrictions, referrers, quotas, and billing status.
+- Complete runtime testing of map loading, pickup changes, weather lookup, fallback behavior, and final fare calculation.
+- Confirm the exact weather thresholds/categories used by the fare library and whether they match product expectations.
+- Confirm Open-Meteo availability, rate limits, and whether a production proxy or caching layer is needed.
