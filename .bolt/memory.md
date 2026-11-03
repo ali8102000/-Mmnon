@@ -3,8 +3,8 @@
 ## Product intent & audience
 
 - Web app includes an interactive map, place search, and taxi-request flow.
-- Taxi fare calculation includes weather-related pricing adjustments.
-- Weather conditions are determined automatically from the pickup location rather than selected manually by the rider.
+- Taxi fares include weather-related pricing adjustments.
+- Weather is determined automatically from the pickup location, not selected manually by the rider.
 
 ## Brand personality & voice
 
@@ -12,33 +12,31 @@
 
 ## Visual design & UX direction
 
-- Prefer Google Maps when a usable client key is available; use Leaflet as fallback.
+- Prefer Google Maps when a usable client key is available; retain Leaflet as fallback.
 - Keep place search functional through free-map search when server-side Google Search configuration is unavailable.
 - Map, search, and weather-provider failures should degrade gracefully.
-- The taxi request screen omits manual hot/cold/rain controls.
-- Automatic weather detection runs from the pickup location and refreshes when that location changes.
-- Use Open-Meteo for weather lookup, with seasonal defaults when lookup fails.
-- Make the detected weather state and its fare impact visible or understandable without user configuration.
+- Taxi request omits manual rain/heat/cold controls.
+- Refresh automatic weather detection when the pickup location changes.
+- Use Open-Meteo for weather lookup, with seasonal defaults on failure.
+- Make detected weather and its fare impact understandable without requiring user configuration.
 
 ## Decisions, constraints & rationale
 
-- No Google Maps key exists in `.env`; the hosted build previously fell back to Leaflet.
-- The legacy Google key came from `mobile/app.json`; `expo-app` references the current Supabase project and was not selected as the migration source.
-- The legacy key was added as a build-time fallback so the hosted client can load Google Maps without `.env`.
-- Client map display and server-side place search use separate Google configuration. Server search still requires a server-side Google key and platform/API key; free-map search remains the fallback until configured.
-- Google credentials should be restricted in Google Cloud by authorized domains/platforms, enabled APIs, quotas, referrers, and billing requirements.
-- Weather pricing is retained, but weather selection is no longer user-controlled.
-- Weather classification uses live pickup conditions, with seasonal weather as the offline/error fallback.
-- The project build succeeded after the weather changes; complete runtime verification of taxi submission and fare calculation remains outstanding.
-- GitHub publishing is pending repository confirmation. No changes have been pushed yet.
-- Candidate repositories identified for this project are `ali8102000/-Mmnon` and `ali8102000/mumnun`; the intended target and branch still need confirmation before publishing.
-- The proposed publish scope is the three modified areas: map configuration, automatic weather handling, and taxi-request screen.
+- The intended GitHub repository is confirmed as `ali8102000/-Mmnon`; changes were reported as uploaded to `main`.
+- Published scope covered map configuration, automatic weather handling, and the taxi-request screen.
+- Google Maps client configuration uses the legacy key from `mobile/app.json`; no `.env` key was available.
+- Client map display and server-side place search use separate Google configuration. Server search still requires an appropriate server-side key and platform/API configuration; free-map search remains the fallback.
+- The repository is public, so the Google key and database key are exposed. Google credentials should be restricted by domains/platforms, APIs, quotas, referrers, and billing requirements; exposed secrets should be reviewed and rotated if necessary.
+- Weather pricing remains enabled, but weather selection is no longer user-controlled.
+- Weather classification uses live pickup conditions, with seasonal fallback when lookup fails.
+- Build completion and end-to-end taxi-flow verification were not confirmed after publishing.
 
 ## Open questions & assumptions
 
-- Confirm whether the intended Google Maps key is from `mobile/app.json` or `expo-app`; replace the fallback if `expo-app` is authoritative.
+- Confirm that the legacy key from `mobile/app.json` is the correct production Google Maps credential; replace it if another project is authoritative.
 - Determine where server-side Google Search credentials and the required platform key should be configured.
-- Confirm the target GitHub repository and branch before pushing.
-- Complete runtime testing of map loading, pickup changes, weather lookup, fallback behavior, and final fare calculation.
+- Verify the repository’s pushed commits and confirm no intended changes are missing.
+- Complete runtime testing of map loading, pickup changes, weather lookup, fallback behavior, taxi submission, and final fare calculation.
 - Confirm the exact weather thresholds/categories used by the fare library and whether they match product expectations.
-- Confirm Open-Meteo availability, rate limits, and whether a production proxy or caching layer is needed.
+- Confirm Open-Meteo availability, rate limits, and whether production proxying or caching is needed.
+- Audit public repository history and deployment configuration for exposed credentials.
