@@ -26,6 +26,9 @@ export default defineConfig({
       "import.meta.env.VITE_SUPABASE_PROJECT_ID": JSON.stringify(
         process.env.VITE_SUPABASE_PROJECT_ID || "zvfdymcalzqhvwnipuup",
       ),
+      "import.meta.env.VITE_GOOGLE_MAPS_API_KEY": JSON.stringify(
+        process.env.VITE_GOOGLE_MAPS_API_KEY || "AIzaSyB0PgoQXL_C7cSwXUiRF_VXFEA0uSiXnJE",
+      ),
     },
   },
 });
